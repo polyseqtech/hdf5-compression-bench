@@ -11,11 +11,23 @@
 
 **重要说明**: 
 - 本项目不要求自己编写压缩算法，而是调用HDF5已有的压缩过滤器进行数据压缩
-- 提供的HDF5文件由于超过100MB限制，已拆分为5个部分（每个小于40MB）
-- **文件合并**: 需要先运行合并脚本将拆分文件合并为完整文件
-  - Linux/macOS: 运行 `./merge_hdf5.sh`（已测试，兼容 macOS）
-  - Windows: 运行 `merge_hdf5.bat`（未测试）
-- **VBZ解压**: 原始HDF5文件使用了ONT的VBZ压缩算法，候选人需要自行下载配置VBZ插件（Ubuntu系统可使用 `sudo apt install libvbz-hdf-plugin-dev` 简单安装，或下载配置动态库/源码安装），使用VBZ插件读取并解压原始文件，然后保存为不压缩格式的HDF5文件作为测试基准
+- **HDF5文件获取方式**（二选一）:
+  - **方式一（推荐）**: 使用提供的拆分文件自行合并
+    - 提供的HDF5文件由于超过100MB限制，已拆分为5个部分（每个小于40MB）
+    - **文件合并**: 需要先运行合并脚本将拆分文件合并为完整文件
+      - Linux/macOS: 运行 `./merge_hdf5.sh`（已测试，兼容 macOS）
+      - Windows: 运行 `merge_hdf5.bat`（未测试）
+  - **方式二**: 通过百度网盘直接下载完整的HDF5文件
+    - 链接: https://pan.baidu.com/s/1GGNYlGSjXW74Mmhn60N2hw
+    - 提取码: `poly`
+    - 文件: `PBG08621_pass_6c7986d6_167483a9_0.hdf5`（已合并的完整文件）
+- **VBZ解压**: 原始HDF5文件使用了ONT的VBZ压缩算法，候选人需要自行下载配置VBZ插件：
+  - **VBZ插件下载地址**: [https://github.com/nanoporetech/vbz_compression/releases](https://github.com/nanoporetech/vbz_compression/releases)
+  - **安装方式**:
+    - Ubuntu系统简单安装：`sudo apt install libvbz-hdf-plugin-dev`
+    - 或从GitHub releases下载预编译的动态库/插件
+    - 或从源码编译安装（参考插件仓库README）
+  - 使用VBZ插件读取并解压原始文件，然后保存为不压缩格式的HDF5文件作为测试基准
 - **测试基准**: 以解压后保存的不压缩格式文件作为压缩比计算的基准
 - **压缩比定义**: 
   - 公式：压缩比 = 未压缩文件大小 / 压缩后文件大小
@@ -70,8 +82,10 @@
 
 ![HDF5文件结构](hdf5_structure.png)
 
-1. **文件合并**: 运行合并脚本将拆分文件合并为完整文件（Linux/macOS: `./merge_hdf5.sh`，Windows: `merge_hdf5.bat`）
-2. **VBZ解压**: 使用VBZ插件（Ubuntu系统可使用 `sudo apt install libvbz-hdf-plugin-dev` 简单安装，或下载配置动态库/源码安装）读取合并后的HDF5文件，解压`read_xxxx/Raw/Signal`数据集，其他字段原样保存
+1. **文件获取**: 
+   - **方式一（推荐）**: 运行合并脚本将拆分文件合并为完整文件（Linux/macOS: `./merge_hdf5.sh`，Windows: `merge_hdf5.bat`）
+   - **方式二**: 从百度网盘下载完整的HDF5文件（链接: https://pan.baidu.com/s/1GGNYlGSjXW74Mmhn60N2hw，提取码: `poly`）
+2. **VBZ解压**: 使用VBZ插件（下载地址: [https://github.com/nanoporetech/vbz_compression/releases](https://github.com/nanoporetech/vbz_compression/releases)，Ubuntu系统可使用 `sudo apt install libvbz-hdf-plugin-dev` 简单安装）读取HDF5文件，解压`read_xxxx/Raw/Signal`数据集，其他字段原样保存
 3. **基准文件生成**: 将解压后的数据写入未压缩格式的HDF5文件（仅对`read_xxxx/Raw/Signal`数据集不压缩，其他字段保持原样），作为后续压缩比计算的基准
 
 ### 任务2: 压缩过滤器测试
@@ -137,9 +151,13 @@
 - **HDF5官方文档**: 压缩过滤器使用指南和API参考
 
 ### 压缩过滤器插件
-- **VBZ**: [https://github.com/nanoporetech/vbz_compression](https://github.com/nanoporetech/vbz_compression)
-  - Ubuntu系统简单安装：`sudo apt install libvbz-hdf-plugin-dev`
-  - 或从源码编译安装
+- **VBZ**: 
+  - GitHub仓库: [https://github.com/nanoporetech/vbz_compression](https://github.com/nanoporetech/vbz_compression)
+  - 插件下载地址: [https://github.com/nanoporetech/vbz_compression/releases](https://github.com/nanoporetech/vbz_compression/releases)
+  - 安装方式：
+    - Ubuntu系统简单安装：`sudo apt install libvbz-hdf-plugin-dev`
+    - 或从GitHub releases下载预编译的动态库/插件
+    - 或从源码编译安装（参考插件仓库README）
 - **Blosc2**: [https://github.com/Blosc/c-blosc2](https://github.com/Blosc/c-blosc2)（可选框架，具有更多功能，有能力的建议尝试）
 - **Blosc**: Blosc压缩过滤器
 - **LZ4**: LZ4压缩过滤器
